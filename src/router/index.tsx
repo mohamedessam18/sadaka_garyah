@@ -6,7 +6,6 @@ const Landing = lazy(() => import('../pages/Landing').then(m => ({ default: m.La
 const Home = lazy(() => import('../pages/Home').then(m => ({ default: m.Home })));
 const AzkarIndex = lazy(() => import('../pages/AzkarIndex').then(m => ({ default: m.AzkarIndex })));
 const AzkarFocus = lazy(() => import('../pages/AzkarFocus').then(m => ({ default: m.AzkarFocus })));
-const QuranIndex = lazy(() => import('../pages/QuranIndex').then(m => ({ default: m.QuranIndex })));
 const QuranReader = lazy(() => import('../pages/QuranReader').then(m => ({ default: m.QuranReader })));
 
 const LoadingSpinner = () => (
@@ -58,7 +57,7 @@ export const router = createBrowserRouter([
         path: 'quran',
         element: (
           <Suspense fallback={<LoadingSpinner />}>
-            <QuranIndex />
+            <QuranReader />
           </Suspense>
         ),
       },

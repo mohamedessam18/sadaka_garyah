@@ -92,5 +92,20 @@ export const quranService = {
   async getAyahTranslation(number: number, edition: string): Promise<string> {
     const response = await api.get<any>(`https://api.alquran.cloud/v1/ayah/${number}/${edition}`);
     return response.data.text;
+  },
+
+  async getPageText(pageNo: number): Promise<any> {
+    const response = await api.get<any>(`https://api.alquran.cloud/v1/page/${pageNo}/quran-simple`);
+    return response.data.data;
+  },
+
+  async getPageTranslation(pageNo: number, edition: string): Promise<any> {
+    const response = await api.get<any>(`https://api.alquran.cloud/v1/page/${pageNo}/${edition}`);
+    return response.data.data;
+  },
+
+  async getPageAudio(pageNo: number): Promise<any> {
+    const response = await api.get<any>(`https://api.alquran.cloud/v1/page/${pageNo}/ar.alafasy`);
+    return response.data.data;
   }
 };

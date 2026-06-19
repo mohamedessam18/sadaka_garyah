@@ -14,6 +14,11 @@ interface CombinedAyah {
   audio: string;
   juz: number;
   page: number;
+  surah?: {
+    number: number;
+    name: string;
+    englishName: string;
+  };
 }
 
 const EDITION_MAPPING: Record<string, string> = {
@@ -23,13 +28,28 @@ const EDITION_MAPPING: Record<string, string> = {
   es: 'es.cortes'
 };
 
+const SURAH_START_PAGES = [
+  1, 2, 50, 77, 106, 128, 151, 177, 187, 208, // 1-10
+  221, 235, 249, 255, 262, 267, 282, 293, 305, 312, // 11-20
+  322, 332, 342, 350, 359, 367, 377, 385, 396, 404, // 21-30
+  411, 415, 418, 428, 434, 440, 446, 453, 458, 467, // 31-40
+  477, 483, 489, 496, 499, 502, 507, 511, 515, 518, // 41-50
+  520, 523, 526, 528, 531, 534, 537, 542, 545, 549, // 51-60
+  551, 553, 554, 556, 558, 560, 562, 564, 566, 568, // 61-70
+  570, 572, 574, 575, 577, 578, 580, 582, 583, 585, // 71-80
+  586, 587, 587, 589, 590, 591, 591, 592, 593, 594, // 81-90
+  595, 595, 596, 596, 597, 597, 598, 598, 599, 599, // 91-100
+  600, 600, 601, 601, 601, 602, 602, 602, 603, 603, // 101-110
+  603, 604, 604, 604 // 111-114
+];
+
 export const QuranReader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === 'ar';
   
-  const surahId = Number(id) || 1;
+  const surahIdParam = Number(id);
 
   // State
   const [surahMeta, setSurahMeta] = useState<{ name: string; englishName: string; numberOfAyahs: number } | null>(null);
@@ -49,8 +69,14 @@ export const QuranReader: React.FC = () => {
   const [immersiveMode, setImmersiveMode] = useState<boolean>(false);
   const [showOverlays, setShowOverlays] = useState<boolean>(true);
 
+  // Index Drawer & Search
+  const [showIndexDrawer, setShowIndexDrawer] = useState<boolean>(false);
+  const [surahList, setSurahList] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Audio elements ref
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const autoPlayNextPageRef = useRef<boolean>(false);
 
   // Touch swipe gesture refs
   const touchStartX = useRef<number | null>(null);
@@ -58,13 +84,28 @@ export const QuranReader: React.FC = () => {
   const touchEndX = useRef<number | null>(null);
   const touchEndY = useRef<number | null>(null);
 
-  // Pages in the current Surah
-  const pagesInSurah = Array.from(new Set(ayahs.map(ayah => ayah.page))).sort((a, b) => a - b);
-  const currentPageIndex = pagesInSurah.indexOf(activePageNumber) !== -1 ? pagesInSurah.indexOf(activePageNumber) : 0;
-  const totalPages = pagesInSurah.length;
+  // Fetch Surah list for the Index drawer
+  useEffect(() => {
+    const fetchSurahList = async () => {
+      try {
+        const list = await quranService.getSurahs();
+        setSurahList(list);
+      } catch (err) {
+        console.error('Error loading Surahs:', err);
+      }
+    };
+    fetchSurahList();
+  }, []);
 
-  // Filter ayahs to display only the ones on the active page
-  const currentPageAyahs = ayahs.filter(ayah => ayah.page === activePageNumber);
+  // Jump to the start page of selected Surah on route param change
+  useEffect(() => {
+    if (surahIdParam && surahIdParam >= 1 && surahIdParam <= 114) {
+      const targetPage = SURAH_START_PAGES[surahIdParam - 1];
+      setActivePageNumber(targetPage);
+    } else if (!id) {
+      setActivePageNumber(1); // default opens to Surah Al-Fatihah (page 1)
+    }
+  }, [id]);
 
   // Enable immersive mode by default on mobile screens
   useEffect(() => {
@@ -73,10 +114,12 @@ export const QuranReader: React.FC = () => {
     }
   }, []);
 
-  // Scroll to top of the page when the page changes
+  // Scroll to top of the page when the page changes (only in non-immersive mode)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [activePageNumber]);
+    if (!immersiveMode) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [activePageNumber, immersiveMode]);
 
   // Turn off immersive mode if user switches to bilingual layout
   useEffect(() => {
@@ -113,14 +156,14 @@ export const QuranReader: React.FC = () => {
     // Only swipe if horizontal movement is dominant
     if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold) {
       if (diffX > 0) {
-        // Swipe Left -> Next Page (in RTL page swipe, dragging left goes to next page)
-        if (currentPageIndex < totalPages - 1) {
-          setActivePageNumber(pagesInSurah[currentPageIndex + 1]);
+        // Swipe Left -> Next Page (if page < 604)
+        if (activePageNumber < 604) {
+          setActivePageNumber(prev => prev + 1);
         }
       } else {
-        // Swipe Right -> Previous Page
-        if (currentPageIndex > 0) {
-          setActivePageNumber(pagesInSurah[currentPageIndex - 1]);
+        // Swipe Right -> Previous Page (if page > 1)
+        if (activePageNumber > 1) {
+          setActivePageNumber(prev => prev - 1);
         }
       }
     }
@@ -132,9 +175,9 @@ export const QuranReader: React.FC = () => {
     touchEndY.current = null;
   };
 
-  // Load Surah details & audio URLs
+  // Load Page details & audio URLs based on activePageNumber
   useEffect(() => {
-    const fetchSurahData = async () => {
+    const fetchPageData = async () => {
       setLoading(true);
       setCurrentPlayingIndex(null);
       setIsPlaying(false);
@@ -142,32 +185,28 @@ export const QuranReader: React.FC = () => {
       const translationEdition = EDITION_MAPPING[i18n.language] || 'en.asad';
       
       try {
-        const [detailData, audioData] = await Promise.all([
-          quranService.getSurahDetail(surahId, translationEdition),
-          quranService.getSurahAudio(surahId)
+        const [arabicRes, translationRes, audioRes] = await Promise.all([
+          quranService.getPageText(activePageNumber),
+          quranService.getPageTranslation(activePageNumber, translationEdition),
+          quranService.getPageAudio(activePageNumber)
         ]);
 
-        const arabicEdition = detailData[0];
-        const translationEditionData = detailData[1];
-
-        setSurahMeta({
-          name: arabicEdition.name,
-          englishName: arabicEdition.englishName,
-          numberOfAyahs: arabicEdition.numberOfAyahs
-        });
+        const pageAyahs = arabicRes.ayahs;
+        const translationAyahs = translationRes.ayahs;
+        const audioAyahs = audioRes.ayahs;
 
         // Merge Arabic text, translation text, and Alafasy audio url for each Ayah
-        const mergedAyahs: CombinedAyah[] = arabicEdition.ayahs.map((ayah, idx) => {
+        const mergedAyahs = pageAyahs.map((ayah: any, idx: number) => {
           let textCleaned = ayah.text;
           
-          // Clean the Bismillah prefix from the text if it's not Surah Al-Fatihah (surah 1) or Surah At-Tawbah (surah 9)
-          if (surahId !== 1 && surahId !== 9 && idx === 0) {
-            const bismillahPrefix = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
-            const alternatePrefix = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+          // Clean the Bismillah prefix from the text if it's the first ayah of the Surah, and not Surah 1 or 9
+          if (ayah.surah.number !== 1 && ayah.surah.number !== 9 && ayah.numberInSurah === 1) {
+            const bismillahPrefix = "بِسْمِ ٱللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+            const bismillahPrefix2 = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
             if (textCleaned.startsWith(bismillahPrefix)) {
               textCleaned = textCleaned.substring(bismillahPrefix.length).trim();
-            } else if (textCleaned.startsWith(alternatePrefix)) {
-              textCleaned = textCleaned.substring(alternatePrefix.length).trim();
+            } else if (textCleaned.startsWith(bismillahPrefix2)) {
+              textCleaned = textCleaned.substring(bismillahPrefix2.length).trim();
             }
           }
 
@@ -175,39 +214,58 @@ export const QuranReader: React.FC = () => {
             number: ayah.number,
             numberInSurah: ayah.numberInSurah,
             text: textCleaned,
-            translation: translationEditionData.ayahs[idx]?.text || '',
-            audio: audioData.ayahs[idx]?.audio || '',
+            translation: translationAyahs[idx]?.text || '',
+            audio: audioAyahs[idx]?.audio || '',
             juz: ayah.juz,
-            page: ayah.page
+            page: ayah.page,
+            surah: ayah.surah
           };
         });
 
         setAyahs(mergedAyahs);
-        const pages = Array.from(new Set(mergedAyahs.map(ayah => ayah.page))).sort((a, b) => a - b);
-        if (pages.length > 0) {
-          setActivePageNumber(pages[0]);
+
+        // Find the most prominent Surah on this page
+        const firstAyahSurah = pageAyahs[0]?.surah;
+        if (firstAyahSurah) {
+          setSurahMeta({
+            name: firstAyahSurah.name,
+            englishName: firstAyahSurah.englishName,
+            numberOfAyahs: firstAyahSurah.numberOfAyahs
+          });
+        }
+
+        // Auto play next page if coming from continuous recitation
+        if (autoPlayNextPageRef.current) {
+          setCurrentPlayingIndex(0);
+          setIsPlaying(true);
+          autoPlayNextPageRef.current = false;
         }
       } catch (error) {
-        console.error('Error fetching Surah data:', error);
-        toast.error(isRtl ? 'حدث خطأ في تحميل السورة' : 'Error loading Surah');
+        console.error('Error fetching page data:', error);
+        toast.error(isRtl ? 'حدث خطأ في تحميل الصفحة' : 'Error loading page');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSurahData();
-  }, [surahId, i18n.language]);
+    fetchPageData();
+  }, [activePageNumber, i18n.language]);
 
-  // Audio ended listener - auto advance to next ayah
+  // Audio ended listener - auto advance to next ayah or next page
   const handleAudioEnded = () => {
     if (currentPlayingIndex !== null) {
       if (currentPlayingIndex < ayahs.length - 1) {
         setCurrentPlayingIndex(currentPlayingIndex + 1);
       } else {
-        // finished last ayah
-        setIsPlaying(false);
-        setCurrentPlayingIndex(null);
-        toast.success(isRtl ? 'اكتمل الاستماع للسورة' : 'Finished listening to the Surah');
+        // finished last ayah on page
+        if (activePageNumber < 604) {
+          autoPlayNextPageRef.current = true;
+          setActivePageNumber(prev => prev + 1);
+        } else {
+          setIsPlaying(false);
+          setCurrentPlayingIndex(null);
+          toast.success(isRtl ? 'اكتمل الاستماع للمصحف' : 'Finished listening to the Quran');
+        }
       }
     }
   };
@@ -255,16 +313,6 @@ export const QuranReader: React.FC = () => {
     }
   }, [currentPlayingIndex]);
 
-  // Synchronize page turns when audio advances to an ayah on another page
-  useEffect(() => {
-    if (currentPlayingIndex !== null) {
-      const activePlayAyah = ayahs[currentPlayingIndex];
-      if (activePlayAyah && activePlayAyah.page !== activePageNumber) {
-        setActivePageNumber(activePlayAyah.page);
-      }
-    }
-  }, [currentPlayingIndex, ayahs, activePageNumber]);
-
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
@@ -276,6 +324,12 @@ export const QuranReader: React.FC = () => {
     } else if (currentPlayingIndex < ayahs.length - 1) {
       setCurrentPlayingIndex(currentPlayingIndex + 1);
       setIsPlaying(true);
+    } else {
+      // jump to next page
+      if (activePageNumber < 604) {
+        autoPlayNextPageRef.current = true;
+        setActivePageNumber(prev => prev + 1);
+      }
     }
   };
 
@@ -283,6 +337,12 @@ export const QuranReader: React.FC = () => {
     if (currentPlayingIndex !== null && currentPlayingIndex > 0) {
       setCurrentPlayingIndex(currentPlayingIndex - 1);
       setIsPlaying(true);
+    } else {
+      // jump to previous page
+      if (activePageNumber > 1) {
+        autoPlayNextPageRef.current = true;
+        setActivePageNumber(prev => prev - 1);
+      }
     }
   };
 
@@ -295,7 +355,15 @@ export const QuranReader: React.FC = () => {
     }
   };
 
-  if (loading) {
+  // Surah Index switching
+  const handleSelectSurah = (surahNum: number) => {
+    const targetPage = SURAH_START_PAGES[surahNum - 1];
+    setActivePageNumber(targetPage);
+    setShowIndexDrawer(false);
+    navigate(`/quran/${surahNum}`);
+  };
+
+  if (loading && ayahs.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center bg-background min-h-[50vh]">
         <div className="flex flex-col items-center gap-3">
@@ -314,6 +382,18 @@ export const QuranReader: React.FC = () => {
     large: 'text-2xl md:text-3xl lg:text-4xl leading-[2.3]'
   };
 
+  // Filter Surahs for Drawer search
+  const filteredSurahs = surahList.filter(surah => 
+    surah.name.includes(searchQuery) || 
+    surah.englishName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    surah.number.toString() === searchQuery
+  );
+
+  // Dynamic height for card in immersive mode to prevent overflow scrolling
+  const cardHeightStyle = immersiveMode 
+    ? { height: showOverlays ? 'calc(100dvh - 130px)' : 'calc(100dvh - 40px)' }
+    : undefined;
+
   return (
     <div 
       onTouchStart={handleTouchStart}
@@ -324,10 +404,10 @@ export const QuranReader: React.FC = () => {
           setShowOverlays(prev => !prev);
         }
       }}
-      className={`flex-1 w-full pb-24 relative flex flex-col items-center select-none transition-colors duration-300 ${
+      className={`flex-1 w-full relative flex flex-col items-center select-none transition-colors duration-300 ${
         immersiveMode 
-          ? 'fixed inset-0 z-[45] bg-[#FAF6EE] dark:bg-[#080B0D] overflow-y-auto pt-24 pb-28 px-3' 
-          : 'bg-background'
+          ? 'fixed inset-0 z-[45] bg-[#FAF6EE] dark:bg-[#080B0D] overflow-hidden pt-14 pb-16 px-3 flex flex-col justify-center' 
+          : 'bg-background pb-24'
       }`}
     >
       {/* Invisible audio node */}
@@ -352,16 +432,27 @@ export const QuranReader: React.FC = () => {
       >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/quran')}
-            className="rounded-full gap-1 px-3 text-xs md:text-sm"
-          >
-            <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
-            {t('quran.back')}
-          </Button>
+          {/* Back Button & Index Toggle */}
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/quran')}
+              className="rounded-full gap-1 px-3 text-xs md:text-sm"
+            >
+              <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+              {t('quran.back')}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowIndexDrawer(true)}
+              className="rounded-full text-xs font-semibold px-3 py-1.5 h-8 border-primary/20 hover:bg-primary/5 text-primary"
+            >
+              {isRtl ? 'الفهرس' : 'Index'}
+            </Button>
+          </div>
 
           {/* Surah Name Meta */}
           {surahMeta && (
@@ -380,7 +471,7 @@ export const QuranReader: React.FC = () => {
             <Button
               variant="ghost"
               size="icon"
-              disabled={currentPlayingIndex === 0}
+              disabled={currentPlayingIndex === 0 && activePageNumber === 1}
               onClick={isRtl ? handleNextAyah : handlePrevAyah}
               className="rounded-full w-9 h-9"
             >
@@ -399,7 +490,7 @@ export const QuranReader: React.FC = () => {
             <Button
               variant="ghost"
               size="icon"
-              disabled={currentPlayingIndex === ayahs.length - 1}
+              disabled={currentPlayingIndex === ayahs.length - 1 && activePageNumber === 604}
               onClick={isRtl ? handlePrevAyah : handleNextAyah}
               className="rounded-full w-9 h-9"
             >
@@ -507,17 +598,18 @@ export const QuranReader: React.FC = () => {
               e.stopPropagation();
               setShowOverlays(prev => !prev);
             }}
+            style={cardHeightStyle}
             className="mushaf-card text-right w-full cursor-pointer"
           >
-            <div className="mushaf-border-lines">
+            <div className="mushaf-border-lines h-full flex flex-col justify-between">
               {/* Mushaf Header (Juz & Surah) */}
               <div className="mushaf-header select-none">
-                <span>{t('quran.juz')} {currentPageAyahs[0]?.juz || 1}</span>
-                <span>{surahMeta?.name}</span>
+                <span>{t('quran.juz')} {ayahs[0]?.juz || 1}</span>
+                <span>{ayahs[0]?.surah?.name || surahMeta?.name}</span>
               </div>
 
               {/* Bismillah Frame inside Mushaf */}
-              {surahId !== 9 && currentPageAyahs.some(ayah => ayah.numberInSurah === 1) && (
+              {ayahs.some(ayah => ayah.numberInSurah === 1 && ayah.surah?.number !== 9) && (
                 <div className="bismillah-frame select-none">
                   بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                 </div>
@@ -526,43 +618,40 @@ export const QuranReader: React.FC = () => {
               {/* Mushaf Text Area */}
               <div 
                 dir="rtl" 
-                className={`font-hafs text-justify select-none ${
-                  fontSize === 'small' 
-                    ? 'text-lg md:text-xl' 
-                    : fontSize === 'large' 
-                    ? 'text-2xl md:text-3xl lg:text-4xl' 
-                    : 'text-xl md:text-2xl lg:text-3xl'
-                }`}
+                className="font-hafs text-justify select-none flex-grow overflow-y-auto scrollbar-none my-auto flex flex-col justify-center"
                 style={{ 
-                  lineHeight: fontSize === 'small' ? '2.8' : fontSize === 'large' ? '3.5' : '3.1',
-                  textAlignLast: currentPageAyahs.length < 5 ? 'center' : 'justify'
+                  fontSize: fontSize === 'small' ? '1.05rem' : fontSize === 'large' ? '1.5rem' : '1.25rem',
+                  lineHeight: fontSize === 'small' ? '2.5' : fontSize === 'large' ? '3.3' : '2.9',
+                  textAlignLast: ayahs.length < 5 ? 'center' : 'justify'
                 }}
               >
-                {currentPageAyahs.map((ayah) => {
-                  const globalIndex = ayahs.indexOf(ayah);
-                  const isPlayingThis = currentPlayingIndex === globalIndex;
-                  return (
-                    <span
-                      key={ayah.numberInSurah}
-                      id={`ayah-${ayah.numberInSurah}`}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Stop click from toggling controls
-                        handleAyahClick(globalIndex);
-                      }}
-                      className={`inline cursor-pointer transition-all duration-300 px-1 py-0.5 rounded-lg mx-0.5 ${
-                        isPlayingThis
-                          ? 'bg-primary/20 text-primary font-bold shadow-sm border-b-2 border-primary/60'
-                          : 'hover:bg-primary/10'
-                      }`}
-                    >
-                      {ayah.text}
-                      {/* Ayah End Sign */}
-                      <span className="text-primary text-[10px] md:text-xs font-bold inline-block mr-1 opacity-90 select-none font-sans">
-                        ﴿{ayah.numberInSurah}﴾
+                <div>
+                  {ayahs.map((ayah) => {
+                    const globalIndex = ayahs.indexOf(ayah);
+                    const isPlayingThis = currentPlayingIndex === globalIndex;
+                    return (
+                      <span
+                        key={ayah.numberInSurah}
+                        id={`ayah-${ayah.numberInSurah}`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Stop click from toggling controls
+                          handleAyahClick(globalIndex);
+                        }}
+                        className={`inline cursor-pointer transition-all duration-300 px-1 py-0.5 rounded-lg mx-0.5 ${
+                          isPlayingThis
+                            ? 'bg-primary/20 text-primary font-bold shadow-sm border-b-2 border-primary/60'
+                            : 'hover:bg-primary/10'
+                        }`}
+                      >
+                        {ayah.text}
+                        {/* Ayah End Sign */}
+                        <span className="text-primary text-[10px] md:text-xs font-bold inline-block mr-1 opacity-90 select-none font-sans">
+                          ﴿{ayah.numberInSurah}﴾
+                        </span>
                       </span>
-                    </span>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Mushaf Footer (Page Number) */}
@@ -575,7 +664,7 @@ export const QuranReader: React.FC = () => {
           /* Normal View (Not Immersive) */
           <>
             {/* Render beautiful Bismillah calligraphy at top, if not Surah At-Tawbah (Surah 9) */}
-            {surahId !== 9 && (
+            {ayahs.some(ayah => ayah.numberInSurah === 1 && ayah.surah?.number !== 9) && (
               <div className="text-center my-8 select-none">
                 <p className="font-hafs text-3xl md:text-4xl text-foreground/90 font-bold leading-loose">
                   بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
@@ -598,7 +687,7 @@ export const QuranReader: React.FC = () => {
                   } text-foreground text-justify select-none`}
                   style={{ lineHeight: fontSize === 'small' ? '3.2' : fontSize === 'large' ? '3.8' : '3.5' }}
                 >
-                  {currentPageAyahs.map((ayah) => {
+                  {ayahs.map((ayah) => {
                     const globalIndex = ayahs.indexOf(ayah);
                     const isPlayingThis = currentPlayingIndex === globalIndex;
                     return (
@@ -628,7 +717,7 @@ export const QuranReader: React.FC = () => {
             ) : (
               /* List of Ayahs (Bilingual Card Style) */
               <div className="space-y-6">
-                {currentPageAyahs.map((ayah) => {
+                {ayahs.map((ayah) => {
                   const globalIndex = ayahs.indexOf(ayah);
                   const isPlayingThis = currentPlayingIndex === globalIndex;
                   
@@ -649,7 +738,7 @@ export const QuranReader: React.FC = () => {
                       {/* Ayah Meta Badge */}
                       <div className="flex items-center justify-between border-b border-border/40 pb-3 mb-4 pointer-events-none text-muted-foreground/60">
                         <span className="text-[10px] font-bold font-mono tracking-widest bg-muted/80 px-2 py-0.5 rounded-full">
-                          {surahId}:{ayah.numberInSurah}
+                          {ayah.surah?.number || surahIdParam}:{ayah.numberInSurah}
                         </span>
                         
                         {/* juz & page info */}
@@ -698,54 +787,124 @@ export const QuranReader: React.FC = () => {
       </div>
 
       {/* Pagination Bar */}
-      {totalPages > 1 && (
-        <div 
-          onClick={(e) => e.stopPropagation()}
-          className={`${
-            immersiveMode
-              ? 'fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-md p-4 shadow-lg transition-all duration-300 flex items-center justify-between'
-              : 'max-w-4xl w-full px-4 flex items-center justify-between mt-8 pt-6 border-t border-border'
-          } ${immersiveMode && !showOverlays ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className={`${
+          immersiveMode
+            ? 'fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-md p-4 shadow-lg transition-all duration-300 flex items-center justify-between'
+            : 'max-w-4xl w-full px-4 flex items-center justify-between mt-8 pt-6 border-t border-border'
+        } ${immersiveMode && !showOverlays ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={activePageNumber === 1}
+          onClick={() => setActivePageNumber(prev => prev - 1)}
+          className="rounded-full text-xs font-semibold px-4 py-2"
         >
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPageIndex === 0}
-            onClick={() => setActivePageNumber(pagesInSurah[currentPageIndex - 1])}
-            className="rounded-full text-xs font-semibold px-4 py-2"
+          {t('quran.prevPage')}
+        </Button>
+        
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">{t('quran.pageLabel')}</span>
+          <select
+            value={activePageNumber}
+            onChange={(e) => setActivePageNumber(Number(e.target.value))}
+            className="bg-card text-foreground border border-border rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
           >
-            {t('quran.prevPage')}
-          </Button>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{t('quran.pageLabel')}</span>
-            <select
-              value={activePageNumber}
-              onChange={(e) => setActivePageNumber(Number(e.target.value))}
-              className="bg-card text-foreground border border-border rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-            >
-              {pagesInSurah.map((pageNo) => (
-                <option key={pageNo} value={pageNo}>
-                  {pageNo}
-                </option>
-              ))}
-            </select>
-            <span className="text-xs text-muted-foreground">
-              / {pagesInSurah[pagesInSurah.length - 1]}
-            </span>
-          </div>
+            {Array.from({ length: 604 }, (_, i) => i + 1).map((pageNo) => (
+              <option key={pageNo} value={pageNo}>
+                {pageNo}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-muted-foreground">
+            / 604
+          </span>
+        </div>
 
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={activePageNumber === 604}
+          onClick={() => setActivePageNumber(prev => prev + 1)}
+          className="rounded-full text-xs font-semibold px-4 py-2"
+        >
+          {t('quran.nextPage')}
+        </Button>
+      </div>
+
+      {/* Index Drawer (Side Drawer) */}
+      <div 
+        onClick={() => setShowIndexDrawer(false)}
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-300 ${
+          showIndexDrawer ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      />
+      
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className={`fixed top-0 right-0 z-50 h-full w-72 sm:w-80 bg-background border-l border-border shadow-2xl flex flex-col transition-transform duration-300 ${
+          showIndexDrawer ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <h3 className="font-bold text-lg font-amiri text-primary">{t('quran.surahGrid') || 'الفهرس'}</h3>
           <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPageIndex === totalPages - 1}
-            onClick={() => setActivePageNumber(pagesInSurah[currentPageIndex + 1])}
-            className="rounded-full text-xs font-semibold px-4 py-2"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowIndexDrawer(false)}
+            className="rounded-full w-8 h-8 font-sans"
           >
-            {t('quran.nextPage')}
+            ✕
           </Button>
         </div>
-      )}
+
+        {/* Drawer Search Input */}
+        <div className="p-3 border-b border-border">
+          <input
+            type="text"
+            placeholder={t('quran.searchPlaceholder') || 'ابحث عن سورة...'}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-muted/45 text-foreground border border-border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary font-sans text-right"
+            dir="rtl"
+          />
+        </div>
+
+        {/* Drawer Surah List */}
+        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          {filteredSurahs.map((surah) => {
+            const startPage = SURAH_START_PAGES[surah.number - 1];
+            return (
+              <button
+                key={surah.number}
+                onClick={() => handleSelectSurah(surah.number)}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-muted/40 transition-colors text-right"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground font-sans bg-muted px-2 py-0.5 rounded-full">
+                    {t('quran.pageLabel')} {startPage}
+                  </span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="font-amiri font-bold text-sm text-foreground">{surah.name}</p>
+                    <p className="text-[9px] text-muted-foreground uppercase font-sans tracking-wider">
+                      {surah.englishName} ({surah.numberOfAyahs} {t('quran.verses')})
+                    </p>
+                  </div>
+                  <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary font-sans">
+                    {surah.number}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
