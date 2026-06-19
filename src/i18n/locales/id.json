@@ -82,6 +82,12 @@
     "dedicationShort": "Sedekah jariah untuk almarhum Mohamed Elsayed (رحمه الله)",
     "nextPage": "Halaman Selanjutnya",
     "prevPage": "Halaman Sebelumnya",
-    "pageLabel": "Halaman"
+    "pageLabel": "Halaman",
+    "mushafMode": "Mode Mushaf Penuh",
+    "exitMushafMode": "Keluar Mode Mushaf",
+    "tapToToggle": "Ketuk di mana saja untuk menampilkan/menyembunyikan kontrol",
+    "juz": "Juz'",
+    "page": "Halaman",
+    "surah": "Surah"
   }
 }

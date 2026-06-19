@@ -67,6 +67,7 @@ module.exports = {
         },
       },
       fontFamily: {
+        'hafs': ['UthmanicHafs', 'Amiri', 'Scheherazade New', 'serif'],
         'amiri': ['Amiri', 'Scheherazade New', 'serif'],
         'scheherazade': ['Scheherazade New', 'Amiri', 'serif'],
         'noto-arabic': ['Noto Sans Arabic', 'sans-serif'],

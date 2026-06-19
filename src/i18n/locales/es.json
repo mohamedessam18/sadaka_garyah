@@ -82,6 +82,12 @@
     "dedicationShort": "Caridad continua para Mohamed Elsayed (رحمه الله)",
     "nextPage": "Página Siguiente",
     "prevPage": "Página Anterior",
-    "pageLabel": "Página"
+    "pageLabel": "Página",
+    "mushafMode": "Modo Mushaf Completo",
+    "exitMushafMode": "Salir del Modo Mushaf",
+    "tapToToggle": "Toca en cualquier lugar para mostrar/ocultar los controles",
+    "juz": "Yuz'",
+    "page": "Página",
+    "surah": "Sura"
   }
 }

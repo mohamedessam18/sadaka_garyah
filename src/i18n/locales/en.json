@@ -82,6 +82,12 @@
     "dedicationShort": "Continuous charity for Mohamed Elsayed (رحمه الله)",
     "nextPage": "Next Page",
     "prevPage": "Previous Page",
-    "pageLabel": "Page"
+    "pageLabel": "Page",
+    "mushafMode": "Full Mushaf Mode",
+    "exitMushafMode": "Exit Mushaf Mode",
+    "tapToToggle": "Tap anywhere to toggle control overlays",
+    "juz": "Juz",
+    "page": "Page",
+    "surah": "Surah"
   }
 }
