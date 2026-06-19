@@ -96,16 +96,16 @@ export const quranService = {
 
   async getPageText(pageNo: number): Promise<any> {
     const response = await api.get<any>(`https://api.alquran.cloud/v1/page/${pageNo}/quran-simple`);
-    return response.data.data;
+    return response.data;
   },
 
   async getPageTranslation(pageNo: number, edition: string): Promise<any> {
     const response = await api.get<any>(`https://api.alquran.cloud/v1/page/${pageNo}/${edition}`);
-    return response.data.data;
+    return response.data;
   },
 
   async getPageAudio(pageNo: number): Promise<any> {
     const response = await api.get<any>(`https://api.alquran.cloud/v1/page/${pageNo}/ar.alafasy`);
-    return response.data.data;
+    return response.data;
   }
 };
