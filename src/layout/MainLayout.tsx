@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Globe, Home, BookOpen, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAutoDhikr } from '../hooks/useAutoDhikr';
+import { GlobalAudioPlayer } from '../components/features/GlobalAudioPlayer';
 
 const languages = [
   { code: 'ar', label: 'العربية', dir: 'rtl' },
@@ -66,6 +67,9 @@ export const MainLayout: React.FC = () => {
       <main className="flex-1 flex flex-col relative w-full">
         <Outlet />
       </main>
+
+      {/* Global Audio Player Bar */}
+      <GlobalAudioPlayer />
 
       {/* Footer (shown above bottom navbar due to pb-16) */}
       <footer className="py-8 border-t border-border bg-card text-card-foreground">
