@@ -58,7 +58,35 @@
     "count": "Remaining",
     "back": "Back",
     "title": "Hisn al-Muslim & Daily Remembrances",
-    "congratulations": "May Allah accept from you! You have successfully completed all remembrances."
+    "congratulations": "May Allah accept from you! You have successfully completed all remembrances.",
+    "audioTitle": "Recited by Mishary Alafasy",
+    "focusMode": "Zen Focus Mode",
+    "focusModeDesc": "Read distraction-free. Tap anywhere on the card to count down.",
+    "designCard": "Design Card",
+    "streakTitle": "Azkar Streak & Habit Log",
+    "streakDesc": "Keep up your daily ورد to build a blessed consistent habit",
+    "currentStreak": "Current Streak: {{count}} consecutive days",
+    "maxStreak": "Best Streak: {{count}} days",
+    "totalCompletions": "Total Completions: {{count}}",
+    "dayCompleted": "Done",
+    "dayNotCompleted": "Pending",
+    "notificationTitle": "Daily Azkar Reminders",
+    "notificationDesc": "Browser notifications to remind you to read Morning and Evening Azkar",
+    "notificationBtnEnable": "Enable Reminders",
+    "notificationBtnDisable": "Disable Reminders",
+    "notificationGranted": "Browser reminders successfully enabled!",
+    "notificationDenied": "Please enable notification permissions in your browser settings.",
+    "customTasbihTitle": "Custom Tasbih Counter",
+    "customTasbihDesc": "Write your own dhikr phrase, specify target counts, and save it to your personal dial",
+    "customTasbihPlaceholder": "Type your dhikr here (e.g. Subhan Allah)",
+    "customTasbihTarget": "Target Count",
+    "customTasbihAdd": "Add to Tasbih",
+    "customTasbihEmpty": "No custom dhikr items added yet.",
+    "customTasbihList": "Your Custom Dhikr Items:",
+    "customTasbihReset": "Reset Counter",
+    "customTasbihDelete": "Delete",
+    "audioPlayerSpeed": "Speed",
+    "audioPlayerVolume": "Volume"
   },
   "quran": {
     "title": "Quranic Index",
@@ -89,5 +117,115 @@
     "juz": "Juz",
     "page": "Page",
     "surah": "Surah"
+  },
+  "features": {
+    "tabs": {
+      "ayah": "Designer & Hadith",
+      "dua": "Remembrances Hub",
+      "prayerQibla": "Prayer & Qibla",
+      "khatmah": "Khatmah Hub",
+      "dhikr": "Quran Audio"
+    },
+    "dua": {
+      "title": "Supplications & Memorial for Mohamed Elsayed",
+      "subtitle": "Support with a sincere Dua for the late Mohamed Elsayed. Tapping 'Amen' acts as a continuous charity for him and registers your prayer.",
+      "countLabel": "You have prayed for him {{count}} times in this session",
+      "btnDua": "AMEN (Pray for Him)",
+      "toastDua": "May Allah accept your supplication and forgive him",
+      "customDuaPlaceholder": "Write your custom supplication here...",
+      "btnSaveCustom": "Save Supplication",
+      "customDuaList": "Your custom supplications:",
+      "presetDuas": [
+        "O Allah, forgive him and have mercy on him, keep him safe and sound, and excuse him.",
+        "O Allah, make his grave a garden from the gardens of Paradise and not a pit of Fire.",
+        "O Allah, make his record right, ease his account, and make his scales heavy with good deeds.",
+        "O Allah, admit him to Paradise without reckoning or prior punishment.",
+        "O Allah, gather us with him in the Gardens of Bliss with the Prophets, the Truthful, and the Martyrs."
+      ]
+    },
+    "qibla": {
+      "title": "Qibla Finder",
+      "compassDirections": {
+        "N": "N",
+        "E": "E",
+        "S": "S",
+        "W": "W"
+      },
+      "alignCompass": "Align the top of your phone towards the Kaaba pointer",
+      "pointingToQibla": "You are facing the Qibla now!",
+      "angleLabel": "Qibla Angle: {{angle}}°",
+      "allowLocation": "Please allow location access to calculate accurate Qibla direction",
+      "gpsActive": "GPS Location active",
+      "fallbackCairo": "Default location: Cairo (Please enable GPS)",
+      "orientationErr": "Orientation sensor not supported. Please point manually to {{angle}}°"
+    },
+    "prayer": {
+      "title": "Prayer Times",
+      "fajr": "Fajr",
+      "sunrise": "Sunrise",
+      "dhuhr": "Dhuhr",
+      "asr": "Asr",
+      "maghrib": "Maghrib",
+      "isha": "Isha",
+      "nextPrayer": "Next Prayer: {{name}}",
+      "remaining": "Remaining: {{time}}",
+      "adhanToggle": "Enable Auto Adhan Sound",
+      "adhanVolume": "Adhan Volume",
+      "testAdhan": "Test Adhan Audio",
+      "stopAdhan": "Stop Adhan Audio",
+      "calculating": "Calculating prayer times...",
+      "nowAdhan": "It is now time for the Adhan of {{name}} prayer"
+    },
+    "khatmah": {
+      "title": "Khatmah Planner & Tracker",
+      "targetDays": "Target Days to Complete",
+      "startPage": "Current Page to Start From",
+      "btnCreate": "Create New Plan",
+      "btnReset": "Reset Active Plan",
+      "dailyGoal": "Today's Target",
+      "pagesPerDay": "Pages/Day",
+      "pagesLeft": "Pages Left",
+      "daysLeft": "Days Left",
+      "percentage": "Completion Progress",
+      "estCompletion": "Estimated Completion Date",
+      "statusAhead": "You are {{pages}} pages ahead of your plan!",
+      "statusBehind": "You are {{pages}} pages behind. Read more to catch up!",
+      "statusOnTrack": "You are exactly on track with your plan. Keep going!",
+      "btnReadNow": "Start Reading Now (Page {{page}})",
+      "btnIncrementPage": "I Read a Page (+1 Page)",
+      "updateCurrentPage": "Edit Current Page",
+      "setPage": "Set Page",
+      "noPlan": "No active plan found. Set your completion target days and start now!"
+    },
+    "dhikr": {
+      "title": "Auto Dhikr & Remembrance Reminders",
+      "enable": "Enable Background Dhikr Audio",
+      "interval": "Dhikr Playback Interval",
+      "phrase": "Remembrance Phrase",
+      "testSound": "Test Dhikr Sound",
+      "explain": "This plays a gentle background audio remembrance at selected intervals as you browse, serving as an ongoing spiritual reminder.",
+      "phrases": {
+        "salawat": "Salawat (Blessings on the Prophet)",
+        "tasbih": "Tasbih & Tahmid (SubhanAllah wa Bihamdihi)",
+        "istighfar": "Istighfar (Forgiveness invocation)",
+        "takbeer": "Takbeer (Allahu Akbar)",
+        "random": "Random Dhikr"
+      }
+    },
+    "designer": {
+      "title": "Ayah Card Designer",
+      "bgType": "Background Type",
+      "gradient": "Premium Gradient",
+      "solid": "Solid Color",
+      "pattern": "Islamic Pattern",
+      "textColor": "Text & Font Color",
+      "textSize": "Ayah Text Size",
+      "transSize": "Translation Text Size",
+      "cardLayout": "Card Layout",
+      "portrait": "Story (9:16 Portrait)",
+      "square": "Post (1:1 Square)",
+      "btnDownload": "Export Card Image",
+      "toastSuccess": "Your card image downloaded successfully!"
+    }
   }
 }

@@ -89,5 +89,115 @@
     "juz": "Juz'",
     "page": "Halaman",
     "surah": "Surah"
+  },
+  "features": {
+    "tabs": {
+      "ayah": "Ayat Harian",
+      "dua": "Doa untuk Mohamed",
+      "prayerQibla": "Salat & Kiblat",
+      "khatmah": "Rencana Khatam",
+      "dhikr": "Dzikir Otomatis"
+    },
+    "dua": {
+      "title": "Doa & Peringatan untuk Mohamed Elsayed",
+      "subtitle": "Kirimkan doa tulus untuk almarhum Mohamed Elsayed. Ketukan pada tombol 'Amin' bertindak sebagai amal jariah bagi almarhum dan mencatat doa Anda.",
+      "countLabel": "Anda telah mendoakannya {{count}} kali sesi ini",
+      "btnDua": "AMEN (Doakan Dia)",
+      "toastDua": "Semoga Allah menerima doa Anda dan mengampuninya",
+      "customDuaPlaceholder": "Tulis doa kustom Anda di sini...",
+      "btnSaveCustom": "Simpan Doa",
+      "customDuaList": "Doa kustom Anda:",
+      "presetDuas": [
+        "Ya Allah, ampunilah dia, rahmatilah dia, selamatkanlah dia, dan maafkanlah kesalahannya.",
+        "Ya Allah, jadikanlah kuburnya taman dari taman-taman Surga dan jangan jadikan lubang Neraka.",
+        "Ya Allah, muliakanlah tempat tinggalnya, mudahkanlah hisabnya, dan beratkanlah timbangan kebaikannya.",
+        "Ya Allah, masukkanlah dia ke dalam Surga tanpa hisab dan tanpa siksa sebelumnya.",
+        "Ya Allah, kumpulkanlah kami bersamanya di Surga yang penuh kenikmatan bersama para Nabi, Shiddiqin, dan Syuhada."
+      ]
+    },
+    "qibla": {
+      "title": "Arah Kiblat",
+      "compassDirections": {
+        "N": "U",
+        "E": "T",
+        "S": "S",
+        "W": "B"
+      },
+      "alignCompass": "Sejajarkan bagian atas ponsel Anda ke arah jarum Kiblat",
+      "pointingToQibla": "Anda sedang menghadap Kiblat sekarang!",
+      "angleLabel": "Sudut Kiblat: {{angle}}°",
+      "allowLocation": "Izinkan akses lokasi untuk menghitung arah Kiblat yang akurat",
+      "gpsActive": "Lokasi GPS aktif",
+      "fallbackCairo": "Lokasi default: Kairo (Silakan aktifkan GPS)",
+      "orientationErr": "Sensor orientasi tidak didukung. Harap arahkan secara manual ke {{angle}}°"
+    },
+    "prayer": {
+      "title": "Waktu Salat",
+      "fajr": "Subuh",
+      "sunrise": "Terbit",
+      "dhuhr": "Zuhur",
+      "asr": "Asar",
+      "maghrib": "Maghrib",
+      "isha": "Isya",
+      "nextPrayer": "Salat Berikutnya: {{name}}",
+      "remaining": "Sisa Waktu: {{time}}",
+      "adhanToggle": "Aktifkan Suara Azan Otomatis",
+      "adhanVolume": "Volume Azan",
+      "testAdhan": "Uji Audio Azan",
+      "stopAdhan": "Hentikan Azan",
+      "calculating": "Menghitung waktu salat...",
+      "nowAdhan": "Sekarang waktu Azan untuk salat {{name}}"
+    },
+    "khatmah": {
+      "title": "Perencana & Pelacak Khatam",
+      "targetDays": "Target Hari Menyelesaikan",
+      "startPage": "Halaman Awal untuk Mulai",
+      "btnCreate": "Buat Rencana Baru",
+      "btnReset": "Setel Ulang Rencana",
+      "dailyGoal": "Target Hari Ini",
+      "pagesPerDay": "Halaman/Hari",
+      "pagesLeft": "Halaman Tersisa",
+      "daysLeft": "Hari Tersisa",
+      "percentage": "Kemajuan Khatam",
+      "estCompletion": "Estimasi Tanggal Selesai",
+      "statusAhead": "Anda unggul {{pages}} halaman dari rencana!",
+      "statusBehind": "Anda tertinggal {{pages}} halaman. Bacalah lebih banyak!",
+      "statusOnTrack": "Anda tepat sesuai dengan rencana Anda. Lanjutkan!",
+      "btnReadNow": "Mulai Membaca Sekarang (Halaman {{page}})",
+      "btnIncrementPage": "Saya Membaca Halaman (+1 Halaman)",
+      "updateCurrentPage": "Ubah Halaman Sekarang",
+      "setPage": "Setel Halaman",
+      "noPlan": "Rencana belum dibuat. Atur target penyelesaian hari Anda dan mulai sekarang!"
+    },
+    "dhikr": {
+      "title": "Dzikir Otomatis & Pengingat Suara",
+      "enable": "Aktifkan Audio Dzikir Latar Belakang",
+      "interval": "Interval Pemutaran Dzikir",
+      "phrase": "Kalimat Dzikir",
+      "testSound": "Uji Suara Dzikir",
+      "explain": "Fitur ini memutar pengingat audio dzikir lembut di latar belakang pada interval tertentu saat Anda menjelajah sebagai amal jariah.",
+      "phrases": {
+        "salawat": "Salawat (Shalawat Nabi)",
+        "tasbih": "Tasbih & Tahmid (SubhanAllah wa Bihamdihi)",
+        "istighfar": "Istighfar (Permohonan Ampunan)",
+        "takbeer": "Takbir (Allahu Akbar)",
+        "random": "Dzikir Acak"
+      }
+    },
+    "designer": {
+      "title": "Desainer Kartu Ayat",
+      "bgType": "Jenis Latar Belakang",
+      "gradient": "Gradien Premium",
+      "solid": "Warna Solid",
+      "pattern": "Pola Islami",
+      "textColor": "Warna Teks & Font",
+      "textSize": "Ukuran Teks Ayat",
+      "transSize": "Ukuran Teks Terjemahan",
+      "cardLayout": "Tata Letak Kartu",
+      "portrait": "Cerita (9:16 Potret)",
+      "square": "Postingan (1:1 Kotak)",
+      "btnDownload": "Unduh Gambar Kartu",
+      "toastSuccess": "Gambar kartu berhasil diunduh!"
+    }
   }
 }

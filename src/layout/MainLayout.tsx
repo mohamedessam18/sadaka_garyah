@@ -3,6 +3,7 @@ import { NavLink, Outlet, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Globe, Home, BookOpen, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAutoDhikr } from '../hooks/useAutoDhikr';
 
 const languages = [
   { code: 'ar', label: 'العربية', dir: 'rtl' },
@@ -20,6 +21,10 @@ const LANG_LABELS: Record<string, string> = {
 
 export const MainLayout: React.FC = () => {
   const { t, i18n } = useTranslation();
+  
+  // Initialize Global Auto-Dhikr Reminders
+  useAutoDhikr();
+
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return localStorage.getItem('quran-dark-mode') === 'true';
   });

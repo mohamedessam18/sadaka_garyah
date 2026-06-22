@@ -9,6 +9,7 @@
   font-display: swap;
 }
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -337,3 +338,81 @@ audio::-webkit-media-controls-time-remaining-display {
   background-color: rgba(197, 160, 89, 0.02);
 }
 
+/* ============================================================
+   TAJWEED COLORS — quran.com API classes (light mode)
+   ============================================================ */
+tajweed.ham_wasl    { color: #aaaaaa; }
+tajweed.slnt        { color: #aaaaaa; }
+tajweed.laam_shamsiyah { color: #aaaaaa; }
+
+tajweed.madda_necessary  { color: #1565c0; }
+tajweed.madda_obligatory { color: #1565c0; }
+tajweed.madda_normal     { color: #1565c0; }
+tajweed.madda_permissible{ color: #2e7d32; }
+
+tajweed.ghunnah          { color: #2e7d32; }
+tajweed.idgham_ghunnah   { color: #00695c; }
+tajweed.idgham_wo_ghunnah{ color: #00695c; }
+tajweed.idgham_shafawi   { color: #00695c; }
+
+tajweed.ikhafa           { color: #e65100; }
+tajweed.ikhafa_shafawi   { color: #e65100; }
+
+tajweed.iqlab            { color: #6a1b9a; }
+
+tajweed.qalaqah          { color: #c62828; }
+
+/* Verse end ornament */
+span.end {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  border: 1.5px solid #b58d3d;
+  font-size: 0.6em;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  margin: 0 0.25em;
+  color: #b58d3d;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* Dark mode — brighter Tajweed colors */
+.dark tajweed.ham_wasl,
+.dark tajweed.slnt,
+.dark tajweed.laam_shamsiyah { color: #777777; }
+
+.dark tajweed.madda_necessary,
+.dark tajweed.madda_obligatory,
+.dark tajweed.madda_normal    { color: #64b5f6; }
+.dark tajweed.madda_permissible { color: #66bb6a; }
+
+.dark tajweed.ghunnah,
+.dark tajweed.idgham_ghunnah,
+.dark tajweed.idgham_wo_ghunnah,
+.dark tajweed.idgham_shafawi  { color: #26c6da; }
+
+.dark tajweed.ikhafa,
+.dark tajweed.ikhafa_shafawi  { color: #ffa726; }
+
+.dark tajweed.iqlab            { color: #ce93d8; }
+
+.dark tajweed.qalaqah          { color: #ef5350; }
+
+/* Tajweed container */
+.tajweed-text {
+  direction: rtl;
+  unicode-bidi: embed;
+  font-family: 'UthmanicHafs', 'Amiri', serif;
+  text-align: justify;
+}
+
+/* Force Quranic font on all tajweed child elements */
+.tajweed-text tajweed,
+.tajweed-text span,
+tajweed,
+span.end {
+  font-family: 'UthmanicHafs', 'Amiri', serif !important;
+}

@@ -89,5 +89,115 @@
     "juz": "Yuz'",
     "page": "Página",
     "surah": "Sura"
+  },
+  "features": {
+    "tabs": {
+      "ayah": "Aleya Diaria",
+      "dua": "Súplicas por Mohamed",
+      "prayerQibla": "Oración y Alquibla",
+      "khatmah": "Planificador de Jatam",
+      "dhikr": "Dhikr Automático"
+    },
+    "dua": {
+      "title": "Súplicas y Memorial para Mohamed Elsayed",
+      "subtitle": "Kirimkan doa tulus untuk almarhum Mohamed Elsayed. Apoya con una súplica sincera para el difunto Mohamed Elsayed. Presionar el botón 'Amén' actúa como una caridad continua para él.",
+      "countLabel": "Le has rezado {{count}} veces en esta sesión",
+      "btnDua": "AMÉN (Rezar por él)",
+      "toastDua": "Que Alá acepte tus súplicas y le perdone",
+      "customDuaPlaceholder": "Escribe tu súplica personalizada aquí...",
+      "btnSaveCustom": "Guardar Súplica",
+      "customDuaList": "Tus súplicas personalizadas:",
+      "presetDuas": [
+        "Oh Alá, perdónale y ten misericordia de él, mantenle a salvo y discúlpale.",
+        "Oh Alá, haz de su tumba un jardín de los jardines del Paraíso y no un foso del Fuego.",
+        "Oh Alá, facilita su cuenta y haz que su balanza pese más con buenas acciones.",
+        "Oh Alá, admítele en el Paraíso sin juicio ni castigo previo.",
+        "Oh Alá, reúnenos con él en los Jardines de las Delicias con los Profetas y los Mártires."
+      ]
+    },
+    "qibla": {
+      "title": "Buscador de Alquibla",
+      "compassDirections": {
+        "N": "N",
+        "E": "E",
+        "S": "S",
+        "W": "O"
+      },
+      "alignCompass": "Alinee la parte superior de su teléfono con el puntero de la Alquibla",
+      "pointingToQibla": "¡Estás mirando hacia la Alquibla ahora!",
+      "angleLabel": "Ángulo de la Alquibla: {{angle}}°",
+      "allowLocation": "Permita el acceso a la ubicación para calcular la dirección exacta de la Alquibla",
+      "gpsActive": "Ubicación GPS activa",
+      "fallbackCairo": "Ubicación predeterminada: El Cairo (Por favor, active el GPS)",
+      "orientationErr": "Sensor de orientación no compatible. Apunte manualmente a {{angle}}°"
+    },
+    "prayer": {
+      "title": "Horas de Oración",
+      "fajr": "Fajr",
+      "sunrise": "Amanecer",
+      "dhuhr": "Dhuhr",
+      "asr": "Asr",
+      "maghrib": "Maghrib",
+      "isha": "Isha",
+      "nextPrayer": "Próxima oración: {{name}}",
+      "remaining": "Tiempo restante: {{time}}",
+      "adhanToggle": "Activar Sonido de Adán Automático",
+      "adhanVolume": "Volumen del Adán",
+      "testAdhan": "Probar Audio de Adán",
+      "stopAdhan": "Detener Adán",
+      "calculating": "Calculando horas de oración...",
+      "nowAdhan": "Ahora es el momento para el Adán de la oración de {{name}}"
+    },
+    "khatmah": {
+      "title": "Planificador y Seguimiento de Jatam",
+      "targetDays": "Días objetivo para completar",
+      "startPage": "Página actual para comenzar",
+      "btnCreate": "Crear nuevo plan",
+      "btnReset": "Restablecer plan activo",
+      "dailyGoal": "Objetivo de hoy",
+      "pagesPerDay": "Páginas/Día",
+      "pagesLeft": "Páginas restantes",
+      "daysLeft": "Días restantes",
+      "percentage": "Progreso de finalización",
+      "estCompletion": "Fecha estimada de finalización",
+      "statusAhead": "¡Estás {{pages}} páginas adelantado de tu plan!",
+      "statusBehind": "¡Estás {{pages}} páginas retrasado. ¡Lee más para ponerte al día!",
+      "statusOnTrack": "¡Estás exactamente en camino con tu plan. ¡Sigue así!",
+      "btnReadNow": "Comenzar a leer ahora (Página {{page}})",
+      "btnIncrementPage": "Leí una página (+1 Página)",
+      "updateCurrentPage": "Editar página actual",
+      "setPage": "Establecer página",
+      "noPlan": "No se encontró ningún plan activo. ¡Establezca su objetivo de días y comience ahora!"
+    },
+    "dhikr": {
+      "title": "Remembranza y Dhikr Automático",
+      "enable": "Activar Audio de Dhikr en Segundo Plano",
+      "interval": "Intervalo de reproducción de Dhikr",
+      "phrase": "Frase de Remembranza",
+      "testSound": "Probar sonido de Dhikr",
+      "explain": "Esto reproduce una suave recordación de audio de fondo a intervalos seleccionados mientras navega como caridad continua.",
+      "phrases": {
+        "salawat": "Salawat (Bendiciones sobre el Profeta)",
+        "tasbih": "Tasbih y Tahmid (SubhanAllah wa Bihamdihi)",
+        "istighfar": "Istighfar (Invocación de perdón)",
+        "takbeer": "Takbeer (Allahu Akbar)",
+        "random": "Dhikr Aleatorio"
+      }
+    },
+    "designer": {
+      "title": "Diseñador de Tarjetas de Aleyas",
+      "bgType": "Tipo de fondo",
+      "gradient": "Gradiente Premium",
+      "solid": "Color Sólido",
+      "pattern": "Patrón Islámico",
+      "textColor": "Color de Texto y Fuente",
+      "textSize": "Tamaño del texto de la aleya",
+      "transSize": "Tamaño del texto de traducción",
+      "cardLayout": "Diseño de Tarjeta",
+      "portrait": "Historia (9:16 Retrato)",
+      "square": "Publicación (1:1 Cuadrado)",
+      "btnDownload": "Exportar imagen de tarjeta",
+      "toastSuccess": "¡La imagen de la tarjeta se descargó con éxito!"
+    }
   }
 }
